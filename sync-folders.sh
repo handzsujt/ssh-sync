@@ -1,11 +1,21 @@
 #!/bin/bash
 
-sync_directories() {
+sync_dir_initial() {
+  # dual way
   if [ -z "${REMOTE_PASS}" ]; then
     rsync -avzu --delete --exclude-from="${EXCLUDE_FILE}" -e "ssh" "$LOCAL_DIR" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}"
     rsync -avzu --delete --exclude-from="${EXCLUDE_FILE}" -e "ssh" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}" "$LOCAL_DIR" 
   else
     sshpass -p "${REMOTE_PASS}" rsync -avzu --delete --exclude-from="${EXCLUDE_FILE}" -e "ssh" "$LOCAL_DIR" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}"
+    sshpass -p "${REMOTE_PASS}" rsync -avzu --delete --exclude-from="${EXCLUDE_FILE}" -e "ssh" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}" "$LOCAL_DIR"
+  fi
+}
+
+sync_directories() {
+  if [ -z "${REMOTE_PASS}" ]; then
+    rsync -avz --delete --exclude-from="${EXCLUDE_FILE}" -e "ssh" "$LOCAL_DIR" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}"
+  else
+    sshpass -p "${REMOTE_PASS}" rsync -avz --delete --exclude-from="${EXCLUDE_FILE}" -e "ssh" "$LOCAL_DIR" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}"
   fi
 }
 
@@ -81,7 +91,7 @@ if [ -z "${LOCAL_DIR}" ] || [ -z "${REMOTE_USER}" ] || [ -z "${REMOTE_HOST}" ]; 
 fi
 
 echo "Running initial sync, local dir: $LOCAL_DIR; remote dir: $REMOTE_DIR"
-sync_directories
+sync_dir_initial
 sync_result=$?
 
 if [ $sync_result -ne 0 ]; then
