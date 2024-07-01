@@ -2,9 +2,10 @@
 
 sync_directories() {
   if [ -z "${REMOTE_PASS}" ]; then
-    rsync -avz --delete --exclude-from="${EXCLUDE_FILE}" -e "ssh" "$LOCAL_DIR" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}"
+    rsync -avzu --delete --exclude-from="${EXCLUDE_FILE}" -e "ssh" "$LOCAL_DIR" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}"
+    rsync -avzu --delete --exclude-from="${EXCLUDE_FILE}" -e "ssh" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}" "$LOCAL_DIR" 
   else
-    sshpass -p "${REMOTE_PASS}" rsync -avz --delete --exclude-from="${EXCLUDE_FILE}" -e "ssh" "$LOCAL_DIR" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}"
+    sshpass -p "${REMOTE_PASS}" rsync -avzu --delete --exclude-from="${EXCLUDE_FILE}" -e "ssh" "$LOCAL_DIR" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}"
   fi
 }
 
